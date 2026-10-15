@@ -1,6 +1,6 @@
 # Wanderlust — Helm Deployment
 
-* This repo contains a Helm chart that deploys the Wanderlust app (MongoDB, Redis, backend, frontend) to Kubernetes.
+* This repo contains a Helm chart that deploys the Wanderlust app (MongoDB, Redis, backend, frontend)
 * Source Code: https://github.com/DevOps-Playbook/MERN-Stack-Application
 * Frontend image: https://hub.docker.com/r/amigosnishant/mern-stack-application-frontend/tags
 * Backend Image: https://hub.docker.com/r/amigosnishant/mern-stack-application-backend/tags
