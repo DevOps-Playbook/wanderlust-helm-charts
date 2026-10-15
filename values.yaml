@@ -1,0 +1,75 @@
+# Default values for myapp Helm chart.
+
+mongodb:
+  name: mongo
+  image:
+    repository: mongo
+    tag: latest
+    pullPolicy: IfNotPresent
+  port: 27017
+  service:
+    type: ClusterIP
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClassName: ""   # "" uses the cluster default StorageClass
+    accessMode: ReadWriteOnce
+  resources: {}
+    # requests:
+    #   cpu: 250m
+    #   memory: 256Mi
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+
+backend:
+  name: backend
+  image:
+    repository: your-registry/backend   # <-- build ./backend, push it, put the image here
+    tag: latest
+    pullPolicy: IfNotPresent
+  containerPort: 5000
+  service:
+    type: ClusterIP
+    port: 5002        # matches the "5002:5000" mapping in docker-compose
+  # From backend/.env.docker. These become a Secret mounted into the pod via envFrom.
+  env:
+    MONGODB_URI: "mongodb://mongo/wanderlust"
+    REDIS_URL: "redis://redis:6379"
+  resources: {}
+  replicaCount: 1
+
+frontend:
+  name: frontend
+  image:
+    repository: your-registry/frontend  # <-- build ./frontend, push it, put the image here
+    tag: latest
+    pullPolicy: IfNotPresent
+  containerPort: 5173
+  service:
+    type: ClusterIP
+    port: 5173
+  # From frontend/.env.docker.
+  env:
+    VITE_API_PATH: ""
+  resources: {}
+  replicaCount: 1
+
+redis:
+  name: redis
+  image:
+    repository: redis
+    tag: 7.0.5-alpine
+    pullPolicy: IfNotPresent
+  port: 6379
+  resources: {}
+
+# Set to true and configure host(s) below if you want external HTTP access
+# instead of (or in addition to) port-forward / NodePort.
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  frontendHost: frontend.example.com
+  backendHost: api.example.com
+  tls: []

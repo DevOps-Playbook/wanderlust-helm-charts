@@ -1,0 +1,18 @@
+{{- if .Values.mongodb.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.mongodb.name }}-data
+  labels:
+    app: {{ .Values.mongodb.name }}
+    {{- include "myapp.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.mongodb.persistence.accessMode }}
+  {{- if .Values.mongodb.persistence.storageClassName }}
+  storageClassName: {{ .Values.mongodb.persistence.storageClassName }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.mongodb.persistence.size }}
+{{- end }}

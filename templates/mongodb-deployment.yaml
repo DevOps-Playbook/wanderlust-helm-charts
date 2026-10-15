@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.mongodb.name }}
+  labels:
+    app: {{ .Values.mongodb.name }}
+    {{- include "myapp.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Values.mongodb.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.mongodb.name }}
+    spec:
+      containers:
+        - name: {{ .Values.mongodb.name }}
+          image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
+          imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.mongodb.port }}
+          {{- if .Values.mongodb.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- end }}
+          resources:
+            {{- toYaml .Values.mongodb.resources | nindent 12 }}
+      {{- if .Values.mongodb.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.mongodb.name }}-data
+      {{- end }}
